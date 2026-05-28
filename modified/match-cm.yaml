@@ -1,0 +1,10 @@
+apiVersion: v1
+data:
+  b: b
+kind: ConfigMap
+metadata:
+  name: match-cm
+  namespace: pywebapp
+  annotations:
+    pod-reloader.deckhouse.io/match: "true"
+

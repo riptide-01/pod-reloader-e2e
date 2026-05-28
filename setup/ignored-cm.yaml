@@ -1,0 +1,10 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: ignored-cm
+  namespace: pywebapp
+  annotations:
+    reloader.stakater.com/ignore: "true"
+data:
+  index.html: "index page"

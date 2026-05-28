@@ -1,0 +1,78 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pywebapp
+  namespace: pywebapp
+  labels:
+    app: pywebapp
+  annotations:
+    #    pod-reloader.deckhouse.io/auto: "true"
+spec:
+  replicas: 1
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+  selector:
+    matchLabels:
+      app: pywebapp
+  template:
+    metadata:
+      labels:
+        app: pywebapp
+    spec:
+      containers:
+        - name: app
+          image: riptide01/pywebapp:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+          - containerPort: 5000
+            name: http
+          resources:
+            requests:
+              memory: "40Mi"
+              cpu: "80m"
+            limits:
+              memory: "40Mi"
+              cpu: "80m"
+          readinessProbe:
+            httpGet:
+              path: /
+              port: http
+            initialDelaySeconds: 2
+            periodSeconds: 5
+            failureThreshold: 10
+          env:
+            - name: DEFAULT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: default-secret
+                  key: password
+            - name: MATCH_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: match-secret
+                  key: password
+            - name: IGNORED_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: ignored-secret
+                  key: password
+          volumeMounts:
+            - name: default-cm
+              mountPath: "/default-cm"
+            - name: match-cm
+              mountPath: "/match-cm"
+            - name: ignored-cm
+              mountPath: "/ignored-cm"
+      volumes:
+        - name: default-cm
+          configMap:
+            name: default-cm
+        - name: match-cm
+          configMap:
+            name: match-cm
+        - name: ignored-cm
+          configMap:
+            name: ignored-cm
