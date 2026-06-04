@@ -1,0 +1,10 @@
+apiVersion: deckhouse.io/v1alpha1
+kind: ModuleConfig
+metadata:
+  name: pod-reloader
+spec:
+  enabled: true
+  source: deckhouse
+  version: 1
+  settings:
+    reloadOnCreate: true
